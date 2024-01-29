@@ -28,15 +28,13 @@ public_users.get('/isbn/:isbn',function (req, res) {
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
 	author = req.params.author;
-	console.log(`author name passed: ${author}`);
 	requestedBook = []
 	for (const key in books) {
-		if (books[key].author == author) {
+		if (books[key].author === author) {
 			requestedBook.push(books[key]);
 		}
 	}
 	if (requestedBook.length < 1) {
-		console.log("empty\n");
 	    return res.status(403).json({message: "No book with this author"});
 	}
 	return res.send({"books": requestedBook});
@@ -44,8 +42,17 @@ public_users.get('/author/:author',function (req, res) {
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+	title = req.params.title;
+	requestedBook = null;
+	for (const key in books) {
+		if (books[key].title === title) {
+			requestedBook = books[key];
+		}
+	}
+	if (requestedBook === null) {
+	    return res.status(403).json({message: "No book with this title"});
+	}
+	return res.send(requestedBook);
 });
 
 //  Get book review
