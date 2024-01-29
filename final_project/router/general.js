@@ -20,15 +20,26 @@ public_users.get('/',function (req, res) {
 public_users.get('/isbn/:isbn',function (req, res) {
 	isbn = req.params.isbn;
   	if (isbn < 1 || !books[isbn]) {
-		res.status(403).json({message: "Invalid ISBN number"});
+		return res.status(403).json({message: "Invalid ISBN number"});
   	}
   	return res.send(books[isbn]);
  });
 
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+	author = req.params.author;
+	console.log(`author name passed: ${author}`);
+	requestedBook = []
+	for (const key in books) {
+		if (books[key].author == author) {
+			requestedBook.push(books[key]);
+		}
+	}
+	if (requestedBook.length < 1) {
+		console.log("empty\n");
+	    return res.status(403).json({message: "No book with this author"});
+	}
+	return res.send({"books": requestedBook});
 });
 
 // Get all books based on title
