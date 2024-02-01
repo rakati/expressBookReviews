@@ -48,7 +48,7 @@ function getBookByISBN(isbn){
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn', async function (req, res) {
 	try {
-		let isbn = req.params.isbn;
+		const isbn = req.params.isbn;
 		if (! /^[0-9]+$/.test(isbn))
 			throw new TypeError ("Book ISBN should contain only digits");
 		const book = await getBookByISBN(isbn);
@@ -61,8 +61,8 @@ public_users.get('/isbn/:isbn', async function (req, res) {
 // Get book details based on author
 public_users.get('/author/:author', async function (req, res) {
 	try {
-		author = req.params.author;
-		requestedBook = []
+		const author = req.params.author;
+		let requestedBook = []
 		for (const key in books) {
 			if (books[key].author === author) {
 				requestedBook.push(books[key]);
@@ -91,7 +91,7 @@ function getBookByTitle(title) {
 // Get all books based on title
 public_users.get('/title/:title', async function (req, res) {
 	try {
-		title = req.params.title;
+		const title = req.params.title;
 		const book = await getBookByTitle(title);
 		res.send(book);
 	} catch (err) {
@@ -101,7 +101,7 @@ public_users.get('/title/:title', async function (req, res) {
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
-	isbn = req.params.isbn;
+	const isbn = req.params.isbn;
 	if (isbn < 1 || !books[isbn]) {
 	  return res.status(403).json({message: "Invalid ISBN number"});
 	}
