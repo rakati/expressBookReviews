@@ -25,56 +25,78 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/', async function (req, res) {
-	let strres = await JSON.stringify(books, null, 4);
-  return res.send(strres);
+	try {
+		let strres = await new Promise((resolve, reject) => {
+			resolve(JSON.stringify(books, null, 4));
+		});
+		res.send(strres);
+	} catch (err) {
+		res.status(500).json({message: 'Error retrieving books'});
+	}
 });
 
+function getBookByISBN(isbn){
+	return new Promise ((resolve, reject) => {
+		const book = books[isbn];
+		if (book) {
+			resolve(book);
+		} else {
+			reject(new Error(`No book with ${isbn} ISBN`));
+		}
+	})
+}
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn', async function (req, res) {
 	try {
 		let isbn = req.params.isbn;
 		if (! /^[0-9]+$/.test(isbn))
 			throw new TypeError ("Book ISBN should contain only digits");
-		if (isbn in books)
-			res.send(books[isbn]);
-		else {
-			throw new Error ("No Book with " + isbn + " ISBN");
+		const book = await getBookByISBN(isbn);
+		res.send(book);
+	} catch (err) {
+		res.status(404).json({message: err.message});
+	}
+ });
+
+// Get book details based on author
+public_users.get('/author/:author', async function (req, res) {
+	try {
+		author = req.params.author;
+		requestedBook = []
+		for (const key in books) {
+			if (books[key].author === author) {
+				requestedBook.push(books[key]);
+			}
+		}
+		if (requestedBook.length > 0) {
+			res.send({"books": requestedBook});
+		} else {
+			throw Error("No book with this author");
 		}
 	} catch (err) {
 		res.status(403).json({message: err.message});
 	}
-	return res;
- });
-
-// Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-	author = req.params.author;
-	requestedBook = []
-	for (const key in books) {
-		if (books[key].author === author) {
-			requestedBook.push(books[key]);
-		}
-	}
-	if (requestedBook.length < 1) {
-	    return res.status(403).json({message: "No book with this author"});
-	}
-	return res.send({"books": requestedBook});
 });
 
-// Get all books based on title
-public_users.get('/title/:title',function (req, res) {
-	title = req.params.title;
-	requestedBook = null;
-	for (const key in books) {
-		if (books[key].title === title) {
-			requestedBook = books[key];
-			break;
+function getBookByTitle(title) {
+	return new Promise((resolve, reject) => {
+		for (const key in books) {
+			if (books[key].title === title) {
+				resolve(books[key]);
+			}
 		}
+		reject(new Error(`No book with title ${title}`));
+	});
+}
+// Get all books based on title
+public_users.get('/title/:title', async function (req, res) {
+	try {
+		title = req.params.title;
+		const book = await getBookByTitle(title);
+		res.send(book);
+	} catch (err) {
+		res.status(403).json({message: err.message});
 	}
-	if (requestedBook === null) {
-	    return res.status(403).json({message: "No book with this title"});
-	}
-	return res.send(requestedBook);
 });
 
 //  Get book review
