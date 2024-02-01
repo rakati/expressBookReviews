@@ -80,12 +80,17 @@ public_users.get('/author/:author', async function (req, res) {
 
 function getBookByTitle(title) {
 	return new Promise((resolve, reject) => {
+		let found = false;
 		for (const key in books) {
 			if (books[key].title === title) {
 				resolve(books[key]);
+				found = true;
+				break;
 			}
 		}
-		reject(new Error(`No book with title ${title}`));
+		if (!found) {
+			reject(new Error(`No book with title ${title}`));
+		}
 	});
 }
 // Get all books based on title
