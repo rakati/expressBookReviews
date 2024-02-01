@@ -33,10 +33,12 @@ public_users.get('/', async function (req, res) {
 public_users.get('/isbn/:isbn', async function (req, res) {
 	try {
 		let isbn = req.params.isbn;
+		if (! /^[0-9]+$/.test(isbn))
+			throw new TypeError ("Book ISBN should contain only digits");
 		if (isbn in books)
 			res.send(books[isbn]);
 		else {
-			throw new Error ("Invalid Book ISBN");
+			throw new Error ("No Book with " + isbn + " ISBN");
 		}
 	} catch (err) {
 		res.status(403).json({message: err.message});
