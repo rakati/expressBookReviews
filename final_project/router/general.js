@@ -24,18 +24,24 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
-  //Write your code here
-  return res.send(JSON.stringify(books, null, 4));
+public_users.get('/', async function (req, res) {
+	let strres = await JSON.stringify(books, null, 4);
+  return res.send(strres);
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-	isbn = req.params.isbn;
-  	if (isbn < 1 || !books[isbn]) {
-		return res.status(403).json({message: "Invalid ISBN number"});
-  	}
-  	return res.send(books[isbn]);
+public_users.get('/isbn/:isbn', async function (req, res) {
+	try {
+		let isbn = req.params.isbn;
+		if (isbn in books)
+			res.send(books[isbn]);
+		else {
+			throw new Error ("Invalid Book ISBN");
+		}
+	} catch (err) {
+		res.status(403).json({message: err.message});
+	}
+	return res;
  });
 
 // Get book details based on author
