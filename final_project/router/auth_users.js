@@ -30,7 +30,7 @@ regd_users.post("/login", (req,res) => {
 	const password = req.body.password;
 
 	// check if username and password passed in request body
-	if (password && password) {
+	if (username && password) {
 		// check username and password against stored user info
 		if (authenticatedUser(username, password)) {
 			// save user credentials for the session as JWT
