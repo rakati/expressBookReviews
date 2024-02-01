@@ -16,11 +16,11 @@ public_users.post("/register", (req,res) => {
 			users.push({"username": username, "password": password});
 			return res.status(200).json({message: "User successfully registered. Now you can login"});
 		} else {
-			return res.status(404).json({message: "User already exist!"});
+			return res.status(409).json({message: "User already exist!"});
 		}
 	}
 	// user not provided his info username and password
-	return res.status(404).json({message: "Unable to register user"});
+	return res.status(400).json({message: "Unable to register user"});
 });
 
 // Get the book list available in the shop
@@ -74,7 +74,7 @@ public_users.get('/author/:author', async function (req, res) {
 			throw Error("No book with this author");
 		}
 	} catch (err) {
-		res.status(403).json({message: err.message});
+		res.status(404).json({message: err.message});
 	}
 });
 
@@ -95,7 +95,7 @@ public_users.get('/title/:title', async function (req, res) {
 		const book = await getBookByTitle(title);
 		res.send(book);
 	} catch (err) {
-		res.status(403).json({message: err.message});
+		res.status(404).json({message: err.message});
 	}
 });
 
@@ -103,7 +103,7 @@ public_users.get('/title/:title', async function (req, res) {
 public_users.get('/review/:isbn',function (req, res) {
 	const isbn = req.params.isbn;
 	if (isbn < 1 || !books[isbn]) {
-	  return res.status(403).json({message: "Invalid ISBN number"});
+	  return res.status(400).json({message: "Invalid ISBN number"});
 	}
 	return res.send(books[isbn]["reviews"]);
 });
